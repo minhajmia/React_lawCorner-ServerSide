@@ -16,12 +16,30 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
-client.connect((err) => {
-  const collection = client.db("test").collection("devices");
-  // perform actions on the collection object
-  console.log("mongo connect");
-  client.close();
-});
+
+async function run() {
+  try {
+    const serviceReviewCollection = client
+      .db("ServiceReview")
+      .collection("services");
+    // get 3 items
+    app.get("/limitedServices", async (req, res) => {
+      const query = {};
+      const cursor = serviceReviewCollection.find(query).limit(3);
+      const services = await cursor.toArray();
+      res.send(services);
+    });
+    // get all items
+    app.get("/Services", async (req, res) => {
+      const query = {};
+      const cursor = serviceReviewCollection.find(query);
+      const services = await cursor.toArray();
+      res.send(services);
+    });
+  } finally {
+  }
+}
+run().catch((err) => console.error(err));
 
 app.get("/", (req, res) => {
   res.send("server is running for service Review");
