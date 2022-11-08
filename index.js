@@ -22,32 +22,39 @@ async function run() {
     const serviceReviewCollection = client
       .db("ServiceReview")
       .collection("services");
-    // get 3 items
+    const reviewCollection = client.db("ServiceReview").collection("reviews");
+    // get request for  3 items
     app.get("/limitedServices", async (req, res) => {
       const query = {};
       const cursor = serviceReviewCollection.find(query).limit(3);
       const services = await cursor.toArray();
       res.send(services);
     });
-    // get all items
+    // get request for all items
     app.get("/services", async (req, res) => {
       const query = {};
       const cursor = serviceReviewCollection.find(query);
       const services = await cursor.toArray();
       res.send(services);
     });
-    // post api request
+    // post api request for services
     app.post("/services", async (req, res) => {
       const service = req.body;
       console.log(service);
       const result = await serviceReviewCollection.insertOne(service);
       res.send(result);
     });
-    // get  single service
+    // get request for single service
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await serviceReviewCollection.findOne(query);
+      res.send(result);
+    });
+    // post request for review
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
       res.send(result);
     });
   } finally {
