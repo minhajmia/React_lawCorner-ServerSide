@@ -57,6 +57,18 @@ async function run() {
       const result = await reviewCollection.insertOne(review);
       res.send(result);
     });
+    // get request for user own review
+    app.get("/reviews", async (req, res) => {
+      let query = {};
+      if (req.query.email) {
+        query = {
+          email: req.query.email,
+        };
+      }
+      const cursor = reviewCollection.find(query);
+      const orders = await cursor.toArray();
+      res.send(orders);
+    });
   } finally {
   }
 }
