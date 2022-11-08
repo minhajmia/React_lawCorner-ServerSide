@@ -30,11 +30,18 @@ async function run() {
       res.send(services);
     });
     // get all items
-    app.get("/Services", async (req, res) => {
+    app.get("/services", async (req, res) => {
       const query = {};
       const cursor = serviceReviewCollection.find(query);
       const services = await cursor.toArray();
       res.send(services);
+    });
+    // post api request
+    app.post("/services", async (req, res) => {
+      const service = req.body;
+      console.log(service);
+      const result = await serviceReviewCollection.insertOne(service);
+      res.send(result);
     });
   } finally {
   }
