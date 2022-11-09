@@ -26,14 +26,16 @@ async function run() {
     // get request for  3 items
     app.get("/limitedServices", async (req, res) => {
       const query = {};
-      const cursor = serviceReviewCollection.find(query).limit(3);
+      const sort = { _id: -1 };
+      const cursor = serviceReviewCollection.find(query).limit(3).sort(sort);
       const services = await cursor.toArray();
       res.send(services);
     });
     // get request for all items
     app.get("/services", async (req, res) => {
       const query = {};
-      const cursor = serviceReviewCollection.find(query);
+      const sort = { _id: -1 };
+      const cursor = serviceReviewCollection.find(query).sort(sort);
       const services = await cursor.toArray();
       res.send(services);
     });
