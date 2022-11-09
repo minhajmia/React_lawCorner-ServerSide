@@ -101,7 +101,18 @@ async function run() {
         options
       );
       res.send(result);
-      console.log(result);
+    });
+    /// get request for review
+    app.get("/reviews/:id", async (req, res) => {
+      let query = {};
+      if (req.query.id) {
+        query = {
+          _id: ObjectId(req.query.id),
+        };
+      }
+      const cursor = reviewCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
     });
   } finally {
   }
