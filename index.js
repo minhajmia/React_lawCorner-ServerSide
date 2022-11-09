@@ -53,13 +53,11 @@ async function run() {
     // post request for review
     app.post("/reviews", async (req, res) => {
       const review = req.body;
-      console.log(review);
       const result = await reviewCollection.insertOne(review);
       res.send(result);
     });
     // get request for user own review
     app.get("/reviews", async (req, res) => {
-      console.log(req.query.email);
       let query = {};
       if (req.query.email) {
         query = {
@@ -67,24 +65,43 @@ async function run() {
         };
       }
       const cursor = reviewCollection.find(query);
-      const reviews = await cursor.toArray();
-      res.send(reviews);
+      const result = await cursor.toArray();
+      res.send(result);
     });
     // delete request for review
     app.delete("/reviews/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { reviewId: id };
+      const query = { _id: ObjectId(id) };
       const result = await reviewCollection.deleteOne(query);
-      console.log(result);
       res.send(result);
     });
     // get request for specific review update;
     app.get("/reviews/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { reviewId: id };
+      const query = { _id: ObjectId(id) };
       const result = await reviewCollection.findOne(query);
-      console.log(result);
       res.send(result);
+    });
+    // put request for update review
+    app.put("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateReview = req.body;
+      const updateReviewInfo = {
+        $set: {
+          name: updateReview.name,
+          rating: updateReview.rating,
+          reviewInfo: updateReview.reviewInfo,
+        },
+      };
+      const result = await reviewCollection.updateOne(
+        filter,
+        updateReviewInfo,
+        options
+      );
+      res.send(result);
+      console.log(result);
     });
   } finally {
   }
