@@ -1,6 +1,7 @@
 const express = require("express");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const bodyParser = require("body-parser");
 const app = express();
@@ -23,6 +24,7 @@ async function run() {
       .db("ServiceReview")
       .collection("services");
     const reviewCollection = client.db("ServiceReview").collection("reviews");
+
     // get request for  3 items
     app.get("/limitedServices", async (req, res) => {
       const query = {};
@@ -35,6 +37,8 @@ async function run() {
     app.get("/services", async (req, res) => {
       const query = {};
       const sort = { _id: -1 };
+      // const sort = sort({ _id: -1 });
+      // const cursor = serviceReviewCollection.find(query).sort(sort);
       const cursor = serviceReviewCollection.find(query).sort(sort);
       const services = await cursor.toArray();
       res.send(services);
@@ -66,7 +70,8 @@ async function run() {
           email: req.query.email,
         };
       }
-      const cursor = reviewCollection.find(query);
+      const sort = { _id: -1 };
+      const cursor = reviewCollection.find(query).sort(sort);
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -105,11 +110,12 @@ async function run() {
       res.send(result);
     });
     /// get request for review
-    app.get("/reviews/:id", async (req, res) => {
+    app.get("/userReviews", async (req, res) => {
+      // console.log(req.query.id);
       let query = {};
       if (req.query.id) {
         query = {
-          _id: ObjectId(req.query.id),
+          reviewId: req.query.id,
         };
       }
       const cursor = reviewCollection.find(query);
